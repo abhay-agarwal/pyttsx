@@ -20,6 +20,8 @@ from AppKit import NSSpeechSynthesizer
 from PyObjCTools import AppHelper
 from ..voice import Voice
 
+import time
+
 def buildDriver(proxy):
     return NSSpeechDriver.alloc().initWithProxy(proxy)
 
@@ -58,7 +60,9 @@ class NSSpeechDriver(NSObject):
         self._proxy.setBusy(True)
         self._completed = True
         self._proxy.notify('started-utterance')
-        self._tts.startSpeakingString_(unicode(text))
+        self._tts.startSpeakingString_(text)
+        while self._tts.isSpeaking():
+            time.sleep(0.01)
 
     def stop(self):
         if self._proxy.isBusy():
